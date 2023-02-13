@@ -48,8 +48,7 @@ export default AddReservation
 
 const styles = StyleSheet.create({
     suivant:{
-        position: 'absolute',
-        bottom: 54,
+        position: 'absolute',bottom: 40,
         right:40,
 
 

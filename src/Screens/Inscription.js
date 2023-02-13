@@ -1,12 +1,37 @@
 import { StyleSheet, Text, View, Image, TextInput,TouchableOpacity } from 'react-native'
 import React from 'react'
 import { useNavigation } from '@react-navigation/native';
+import axios from "axios";
 
 const Inscription = () => {
     const [Login, onChangeLogin] = React.useState('');
     const [Mdp, onChangeMdp] = React.useState('');
     const [MdpConf, onChangeMdpConf] = React.useState('');
+    
     const { navigate } = useNavigation()
+
+
+
+
+    const handleInscription = async () => {
+
+        try {
+            if(Mdp == MdpConf){
+            const response = await axios.post('http://192.168.1.71:3001/user/inscription', {
+
+                email: Login,
+                password: Mdp
+            });
+            console.log(response);
+            if (response) {
+                console.log('1');  
+                navigate('Accueil');
+            }
+        }
+        } catch (error) {
+            console.error("----", error);
+        }
+    };
 
     return (
         <View style={styles.Fond}>
@@ -33,7 +58,7 @@ const Inscription = () => {
                 onChangeText={onChangeMdpConf}
                 value={MdpConf}
             />
-              <TouchableOpacity style={styles.Bouton} onPress={() => navigate('Accueil')}>
+              <TouchableOpacity style={styles.Bouton} onPress={() => handleInscription()}>
                 <Text style={styles.BoutonCommencer} >S'inscrire</Text>
             </TouchableOpacity>
         </View>
@@ -44,8 +69,7 @@ export default Inscription
 
 const styles = StyleSheet.create({
     suivant:{
-        position: 'absolute',
-        bottom: 54,
+        position: 'absolute',bottom: 40,
         right:40,
 
 

@@ -27,8 +27,7 @@ const Activites = () => {
  <View style={styles.GoProBox}>
             <ImageBackground source={ require('../Ressources/activite1.png')}  resizeMode='cover' style={styles.goProBgImage}>
             <View style={styles.overlayView}/>
-            <Text style={styles.goProText}>Stage Ado</Text>
-             
+            <Text style={styles.goProText}>Stage Ado</Text> 
             </ImageBackground>
 </View>
 </TouchableOpacity>

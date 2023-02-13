@@ -1,12 +1,46 @@
-import { StyleSheet, Text, View, Image, TextInput,TouchableOpacity } from 'react-native'
+import { StyleSheet, Text, View, Image, TextInput, TouchableOpacity } from 'react-native'
+import { alertAsync } from 'react-native-alert-async';
 import React from 'react'
 import { useNavigation } from '@react-navigation/native';
+import axios from "axios";
 
 const Connexion = () => {
-    const [Login, onChangeLogin] = React.useState('exemple@exemple.com');
-    const [Mdp, onChangeMdp] = React.useState('**** **** ****');
+    const [Login, onChangeLogin] = React.useState('');
+    const [Mdp, onChangeMdp] = React.useState(''); 
     const { navigate } = useNavigation()
+    async function showErrorMessage() {
+        const result = await alertAsync({
+            title: 'Erreur',
+            message: 'Email ou mot de passe incorrect',
+            buttons: [
+                { text: 'OK', onPress: () => { } },
+            ],
+        });
+    }
+    const handleLogin = async () => {
 
+        try {
+            const response = await axios.post('http://192.168.1.71:3001/user/login', {
+
+                email: Login,
+                password: Mdp
+            });
+            console.log(response);
+            if (response) {
+                console.log('1');
+
+                const token = response.data.token
+                console.log(response.data.token);
+
+                navigate('Accueil');
+            }
+ 
+        } catch (error) {
+            console.error("----", error);
+        }
+    };
+
+   
     return (
         <View style={styles.Fond}>
             <Text style={styles.Titre}>CONNEXION</Text>
@@ -21,12 +55,15 @@ const Connexion = () => {
                 value={Login}
             />
             <Text style={styles.Login}>*Mot de passe</Text>
+
             <TextInput
                 style={styles.input}
                 onChangeText={onChangeMdp}
                 value={Mdp}
             />
-            <TouchableOpacity style={styles.Bouton} onPress={() => navigate('Accueil')}>
+
+        
+            <TouchableOpacity style={styles.Bouton} onPress={handleLogin}>
                 <Text style={styles.BoutonCommencer} >Se connecter</Text>
             </TouchableOpacity>
         </View>
@@ -60,7 +97,7 @@ const styles = StyleSheet.create({
     Titre: {
         color: '#00A0C6',
         fontSize: 30,
-        textAlign: 'center', 
+        textAlign: 'center',
         marginTop: 98,
         marginLeft: 'auto',
         marginRight: 'auto',
@@ -91,8 +128,8 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderColor: '#2D5F74',
         backgroundColor: '#2D5F74',
-        textAlign: 'center', 
-        marginTop: 252, 
+        textAlign: 'center',
+        marginTop: 252,
     },
     Bouton: {
 

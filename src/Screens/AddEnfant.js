@@ -4,13 +4,42 @@ import Bottom from '../Route/Bottom';
 import { useNavigation } from '@react-navigation/native';
 import HeaderBar from '../Components/HeaderBar';
 import CheckBox from '../Components/CheckBox';
-
+import axios from "axios";
 
 
 const AddEnfant = () => {
+  const [Nom, onChangeNom] = React.useState('');
+  const [Prenom, onChangePrenom] = React.useState('');
+  const [Naissance, onChangeNaissance] = React.useState('');
+  const [Sexe, onChangeSexe] = React.useState('');
   const { navigate } = useNavigation()
   const navigation = useNavigation();
- 
+
+
+  const handleInscription = async () => {
+
+    try {
+       if(Nom && Prenom && Naissance && Sexe){
+        const response = await axios.post('http://192.168.1.71:3001/user/inscriptionEnfant', {
+
+        nom: Nom,
+        prenom: Prenom,
+        sexe: Naissance,
+        datenaissance: Sexe,
+        removed: 'Non'
+        
+        });
+        console.log(response);
+        if (response) {
+            console.log('1');  
+            navigate('Accueil');
+        }
+      }
+    } catch (error) {
+        console.error("----", error);
+    }
+     
+};
   return (
     <>
       <View style={styles.Fond}>
@@ -20,25 +49,31 @@ const AddEnfant = () => {
         <Text style={styles.Login}>Nom :</Text>
         <TextInput
           style={styles.input}
+          onChangeText={onChangeNom}
+                value={Nom}
         />
         <Text style={styles.Login}>Prénom :</Text>
         <TextInput
           style={styles.input}
+          onChangeText={onChangePrenom}
+                value={Prenom}
         />
         <Text style={styles.Login}>Naissance :</Text>
         <TextInput
-          style={styles.input}
+         style={styles.input}
+         onChangeText={onChangeNaissance}
+               value={Naissance}
         />
         <Text style={styles.Login}>Sexe :</Text>
         <View style={styles.checkbox} >
-          <CheckBox Taille={20} />
+          <CheckBox Taille={20} onPress={()=>onChangeSexe('Femme')}/>
           <Text style={styles.text}>Féminin</Text>
-          <CheckBox Taille={20} />
+          <CheckBox Taille={20} onPress={()=>onChangeSexe('Homme')} />
           <Text style={styles.text}>Masculin</Text>
-          <CheckBox Taille={20} />
+          <CheckBox Taille={20} onPress={()=>onChangeSexe('Non mentionné')}/>
           <Text style={styles.text}>Ne souhaite pas mentionner</Text>
         </View>
-        <TouchableOpacity style={styles.Bouton} onPress={() => navigation.goBack()}>
+        <TouchableOpacity style={styles.Bouton} onPress={() => handleInscription()}>
                 <Text style={styles.BoutonCommencer} >Valider</Text>
             </TouchableOpacity>
       </View>
