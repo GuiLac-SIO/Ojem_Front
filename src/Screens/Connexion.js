@@ -3,8 +3,11 @@ import { alertAsync } from 'react-native-alert-async';
 import React from 'react'
 import { useNavigation } from '@react-navigation/native';
 import axios from "axios";
+import { useApp, } from '../Provider/app.provider.js';
 
 const Connexion = () => {
+    const {  setToken, getUser, token} = useApp();
+    
     const [Login, onChangeLogin] = React.useState('');
     const [Mdp, onChangeMdp] = React.useState(''); 
     const { navigate } = useNavigation()
@@ -24,14 +27,18 @@ const Connexion = () => {
 
                 email: Login,
                 password: Mdp
-            });
-            console.log(response);
-            if (response) {
-                console.log('1');
-
-                const token = response.data.token
-                console.log(response.data.token);
-
+            }); 
+            if (response) {    
+                setToken(response.data.token) 
+                console.log('TOOOOKEN', token);
+                const config = {
+                    headers: { Authorization: `Bearer ${token}` }
+                }; 
+                await axios.get( 
+                  'http://192.168.1.71:3001/user/getUser', 
+                  config
+                );
+                 
                 navigate('Accueil');
             }
  
@@ -62,14 +69,16 @@ const Connexion = () => {
                 value={Mdp}
             />
 
-        
-            <TouchableOpacity style={styles.Bouton} onPress={handleLogin}>
+        <View style={{flex:1, marginTop:'70%'}}>
+            <TouchableOpacity style={styles.Bouton} onPress={handleLogin }>
                 <Text style={styles.BoutonCommencer} >Se connecter</Text>
             </TouchableOpacity>
+        </View>
         </View>
     )
 }
 
+ 
 export default Connexion
 
 const styles = StyleSheet.create({
@@ -119,21 +128,25 @@ const styles = StyleSheet.create({
     },
 
     BoutonCommencer: {
-        width: 271,
-        lineHeight: 54,
-        height: 'auto',
         color: 'white',
-        fontSize: 16,
+        fontSize: 16,    
+        lineHeight: 54,
+        
+    },
+    Bouton: {
+
+        alignItems: 'center',
+        justifyContent: 'center',
+     
+        height: 'auto',
+        width: '70%',
+        marginLeft:'auto', 
+        marginRight:'auto',
         borderRadius: 15,
         borderWidth: 1,
         borderColor: '#2D5F74',
         backgroundColor: '#2D5F74',
         textAlign: 'center',
-        marginTop: 252,
-    },
-    Bouton: {
-
-        alignItems: 'center',
-        justifyContent: 'center'
+       
     },
 })

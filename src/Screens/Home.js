@@ -2,13 +2,15 @@ import { StyleSheet, Text, View, TouchableOpacity, Image } from 'react-native'
 import { useFonts, Montserrat_400Regular } from '@expo-google-fonts/montserrat';
 import { useNavigation } from '@react-navigation/native';
 import React from 'react'
+import { useApp } from '../Provider/app.provider';
 
 
 
 const Home = () => {
 
-
+    const {token, getUser} = useApp();
     const { navigate } = useNavigation()
+    
 
     return (
         <View style={styles.Fond}>

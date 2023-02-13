@@ -4,10 +4,26 @@ import { useNavigation } from '@react-navigation/native';
 import axios from "axios";
 
 const Inscription = () => {
+    const [Prenom, onChangePrenom] = React.useState('');
+    const [Nom, onChangeNom] = React.useState('');
     const [Login, onChangeLogin] = React.useState('');
     const [Mdp, onChangeMdp] = React.useState('');
     const [MdpConf, onChangeMdpConf] = React.useState('');
-    
+    const getCurrentDate=()=>{
+ 
+        var date = new Date().getDate();
+        var month = new Date().getMonth() ;
+        var year = new Date().getFullYear();
+   
+        //Alert.alert(date + '-' + month + '-' + year);
+        // You can turn it in to your desired format
+        return year + '-' + month + '-' + date;//format: d-m-y;
+  }
+
+  const DateInscription = getCurrentDate()
+
+ 
+     
     const { navigate } = useNavigation()
 
 
@@ -16,15 +32,21 @@ const Inscription = () => {
     const handleInscription = async () => {
 
         try {
+            console.log(DateInscription);
             if(Mdp == MdpConf){
             const response = await axios.post('http://192.168.1.71:3001/user/inscription', {
 
+                nom: Nom,
+                prenom: Prenom,
                 email: Login,
+                date_inscription: DateInscription,
                 password: Mdp
+                
+
             });
-            console.log(response);
+           
             if (response) {
-                console.log('1');  
+                
                 navigate('Accueil');
             }
         }
@@ -40,12 +62,25 @@ const Inscription = () => {
                 source={require('../Ressources/waveJaune.png')}
                 style={styles.Wave}
             />
+              <Text style={styles.Login}>*Prenom</Text>
+            <TextInput
+                style={styles.input}
+                onChangeText={onChangePrenom}
+                value={Prenom}
+            />
+              <Text style={styles.Login}>*Nom</Text>
+            <TextInput
+                style={styles.input}
+                onChangeText={onChangeNom}
+                value={Nom}
+            />
             <Text style={styles.Login}>*Email</Text>
             <TextInput
                 style={styles.input}
                 onChangeText={onChangeLogin}
                 value={Login}
             />
+
             <Text style={styles.Login}>*Mot de passe</Text>
             <TextInput
                 style={styles.input}
@@ -130,7 +165,7 @@ const styles = StyleSheet.create({
         borderColor: '#2D5F74',
         backgroundColor: '#2D5F74',
         textAlign: 'center', 
-        marginTop: 252, 
+        marginTop: 50, 
     },
     Bouton: {
 

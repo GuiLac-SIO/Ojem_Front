@@ -7,9 +7,11 @@ import { SafeAreaView, View, StyleSheet, Text, StatusBar, } from 'react-native';
 export default function App() {
 
   return ( 
+    <AppProvider >
     <SafeAreaView style={styles.container}>
       <Routes />
     </SafeAreaView> 
+    </AppProvider >
   )
 }
 
