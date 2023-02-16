@@ -3,49 +3,51 @@ import { alertAsync } from 'react-native-alert-async';
 import React from 'react'
 import { useNavigation } from '@react-navigation/native';
 import axios from "axios";
-import { useApp, } from '../Provider/app.provider.js';
+import { useApp, } from '../Provider/app.provider.js'; 
+import * as Crypto from 'expo-crypto';
 
 const Connexion = () => {
-    const {  setToken, getUser, token} = useApp();
+    const {  setToken,setUser } = useApp();
     
     const [Login, onChangeLogin] = React.useState('');
     const [Mdp, onChangeMdp] = React.useState(''); 
     const { navigate } = useNavigation()
-    async function showErrorMessage() {
-        const result = await alertAsync({
-            title: 'Erreur',
-            message: 'Email ou mot de passe incorrect',
-            buttons: [
-                { text: 'OK', onPress: () => { } },
-            ],
-        });
-    }
-    const handleLogin = async () => {
+  
 
-        try {
-            const response = await axios.post('http://192.168.1.71:3001/user/login', {
-
-                email: Login,
-                password: Mdp
-            }); 
-            if (response) {    
-                setToken(response.data.token) 
-                console.log('TOOOOKEN', token);
-                const config = {
-                    headers: { Authorization: `Bearer ${token}` }
-                }; 
-                await axios.get( 
-                  'http://192.168.1.71:3001/user/getUser', 
-                  config
-                );
-                 
-                navigate('Accueil');
-            }
+    
+const handleLogin = async () => {
+    try {
+        const salt = 'azerty';
+        const hashedPassword = await Crypto.digestStringAsync(
+            Crypto.CryptoDigestAlgorithm.SHA256,
+            salt + Mdp // concaténer le sel et le mot de passe
+          );  
+           
+      const response = await axios.post('http://192.168.1.71:3001/user/login', { 
+        email: Login,
+        password: hashedPassword, // envoyer le mot de passe haché dans la requête
+      });  
  
-        } catch (error) {
-            console.error("----", error);
-        }
-    };
+      if (response.data ) {    
+        setToken(response.data.token)  
+        const config = {
+          headers: { Authorization: `Bearer ${response.data.token}` }
+        }; 
+        const User = await axios.get( 
+          'http://192.168.1.71:3001/user/getUser', 
+          config
+        );
+        setUser(User.data[0]);
+        navigate('Accueil');
+      }
+      else{
+        alert('Email ou mot de passe incorrect')
+      }
+    } catch (error) {
+      console.error("----", error);
+    }
+    
+  };
 
    
     return (

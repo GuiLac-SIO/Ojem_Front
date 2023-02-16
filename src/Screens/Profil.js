@@ -1,6 +1,6 @@
 import { StyleSheet, Text, View, Image, TouchableOpacity } from 'react-native'
 import React from 'react'
-import Personne from '../Data/Data'
+ 
 import { useNavigation } from '@react-navigation/native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { AntDesign } from '@expo/vector-icons';
@@ -9,12 +9,13 @@ import { MaterialIcons } from '@expo/vector-icons';
 import HeaderBar from '../Components/HeaderBar';
 import * as ImagePicker from 'expo-image-picker';
 import { useState } from 'react';
+import { useApp } from '../Provider/app.provider';
 
 
 const Profil = () => {
-    const firstPerson = Personne[0];
+    const {  User } = useApp()
     const { navigate } = useNavigation()
-    const [image, setImage] = useState(firstPerson.Photo);
+    const [image, setImage] = useState(User.Photo);
      
 
     const pickImage = async () => {
@@ -55,14 +56,14 @@ const Profil = () => {
                     <View style={styles.verticleLine}></View>
                     <View>
                         <Text style={styles.membre}>Membre depuis</Text>
-                        <Text style={styles.inscription}>{firstPerson.Inscription}</Text>
+                        <Text style={styles.inscription}>{User.Inscription}</Text>
                     </View>
                 </View>
 
-                <Text style={styles.prenomId}>{firstPerson.Prenom}</Text>
+                <Text style={styles.prenomId}>{User.use_prenom}</Text>
 
 
-                <Text style={styles.nomId}>{firstPerson.Nom}</Text>
+                <Text style={styles.nomId}>{User.use_nom}</Text>
 
                 <View style={styles.item}>
                     <Text style={styles.nom}>Nom</Text>

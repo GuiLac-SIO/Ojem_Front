@@ -1,7 +1,9 @@
-import { StyleSheet, Text, View, Image, TextInput,TouchableOpacity } from 'react-native'
+import { StyleSheet, Text, View, Image, TextInput, TouchableOpacity } from 'react-native'
 import React from 'react'
 import { useNavigation } from '@react-navigation/native';
 import axios from "axios";
+import * as Crypto from 'expo-crypto';
+import * as Yup from 'yup';
 
 const Inscription = () => {
     const [Prenom, onChangePrenom] = React.useState('');
@@ -9,50 +11,96 @@ const Inscription = () => {
     const [Login, onChangeLogin] = React.useState('');
     const [Mdp, onChangeMdp] = React.useState('');
     const [MdpConf, onChangeMdpConf] = React.useState('');
-    const getCurrentDate=()=>{
- 
+    const { navigate } = useNavigation()
+    const getCurrentDate = () => {
+
         var date = new Date().getDate();
-        var month = new Date().getMonth() ;
+        var month = new Date().getMonth();
         var year = new Date().getFullYear();
-   
+
         //Alert.alert(date + '-' + month + '-' + year);
         // You can turn it in to your desired format
         return year + '-' + month + '-' + date;//format: d-m-y;
-  }
+    }
 
-  const DateInscription = getCurrentDate()
-
- 
-     
-    const { navigate } = useNavigation()
+    const DateInscription = getCurrentDate()
 
 
 
+
+    const checkPassword = (password) => {
+        if (password.length < 8 || password.toUpperCase() === password) {
+
+            return false;
+        } else {
+            return true;
+        }
+    }
+    const Valide = checkPassword(Mdp)
+
+    const validateEmail = (email) => {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return emailRegex.test(email);
+    }
 
     const handleInscription = async () => {
 
         try {
-            console.log(DateInscription);
-            if(Mdp == MdpConf){
-            const response = await axios.post('http://192.168.1.71:3001/user/inscription', {
+            const salt = 'azerty';
+            const hashedPassword = await Crypto.digestStringAsync(
+                Crypto.CryptoDigestAlgorithm.SHA256,
+                salt + Mdp // concaténer le sel et le mot de passe
+            );
+            console.log("hashedPassword :", hashedPassword);
+            if (Login && Nom && Prenom && DateInscription && Mdp) {
+                if (Mdp == MdpConf) {
+                    if (Valide) {
+                        if (!validateEmail(Login)) {
 
-                nom: Nom,
-                prenom: Prenom,
-                email: Login,
-                date_inscription: DateInscription,
-                password: Mdp
-                
+                            alert("Veuillez saisir une adresse e-mail valide");
+                            return;
+                        }
+                        else { 
+                            const response = await axios.post('http://192.168.1.71:3001/user/inscription', { 
+                                nom: Nom,
+                                prenom: Prenom,
+                                email: Login,
+                                date_inscription: DateInscription,
+                                password: hashedPassword 
+                            });
+                            console.log("response",response.data); 
+                            if (response.data == true) { 
+                                navigate('Accueil');
+                            } 
+                            else{
+                                alert("Cette adresse mail est déja utilisé");
+                            } 
+                        }
+                    }
+                    else 
+                    {
+                        alert("Le mot de passe doit contenir au moins 8 caractères et au moins une lettre majuscule.");
+                    }
+                }
+                else 
+                {
+                    alert("Le mot de passe n'est pas identique");
+                    return;
 
-            });
-           
-            if (response) {
-                
-                navigate('Accueil');
+                }
+
             }
-        }
+            else 
+            {
+                alert("Veuillez renseigner tous les champs")
+            }
+
+
+
         } catch (error) {
             console.error("----", error);
         }
+
     };
 
     return (
@@ -62,13 +110,13 @@ const Inscription = () => {
                 source={require('../Ressources/waveJaune.png')}
                 style={styles.Wave}
             />
-              <Text style={styles.Login}>*Prenom</Text>
+            <Text style={styles.Login}>*Prenom</Text>
             <TextInput
                 style={styles.input}
                 onChangeText={onChangePrenom}
                 value={Prenom}
             />
-              <Text style={styles.Login}>*Nom</Text>
+            <Text style={styles.Login}>*Nom</Text>
             <TextInput
                 style={styles.input}
                 onChangeText={onChangeNom}
@@ -87,13 +135,13 @@ const Inscription = () => {
                 onChangeText={onChangeMdp}
                 value={Mdp}
             />
-              <Text style={styles.Login}>*Confirmez le mot de passe</Text>
+            <Text style={styles.Login}>*Confirmez le mot de passe</Text>
             <TextInput
                 style={styles.input}
                 onChangeText={onChangeMdpConf}
                 value={MdpConf}
             />
-              <TouchableOpacity style={styles.Bouton} onPress={() => handleInscription()}>
+            <TouchableOpacity style={styles.Bouton} onPress={() => handleInscription()}>
                 <Text style={styles.BoutonCommencer} >S'inscrire</Text>
             </TouchableOpacity>
         </View>
@@ -103,9 +151,9 @@ const Inscription = () => {
 export default Inscription
 
 const styles = StyleSheet.create({
-    suivant:{
-        position: 'absolute',bottom: 40,
-        right:40,
+    suivant: {
+        position: 'absolute', bottom: 40,
+        right: 40,
 
 
     },
@@ -133,7 +181,7 @@ const styles = StyleSheet.create({
     Titre: {
         color: '#00A0C6',
         fontSize: 30,
-        textAlign: 'center', 
+        textAlign: 'center',
         marginTop: 98,
         marginLeft: 'auto',
         marginRight: 'auto',
@@ -164,8 +212,8 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderColor: '#2D5F74',
         backgroundColor: '#2D5F74',
-        textAlign: 'center', 
-        marginTop: 50, 
+        textAlign: 'center',
+        marginTop: 50,
     },
     Bouton: {
 

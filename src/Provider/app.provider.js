@@ -8,30 +8,16 @@ const AppProvider = ({ children }) => {
     const [token, setToken] = useState([]);
 
 
-    const getUser = (url) => {
-  
-      axios.get('http://192.168.1.71:3001/user/getUser')
-      url
-        .then(response =>  { 
-          setUser(response.data); 
-        })
-        .catch(error => {
-          console.log(error);
-        });
-    
-    }
-
-
-
-
+ 
 
     const providerValues = {
               // state
               User,
               token,
               setToken,
+              setUser,
          // function 
-         getUser
+       
          
     }; 
     return (

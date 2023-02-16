@@ -1,24 +1,28 @@
 import { StyleSheet, Text, View, Image } from 'react-native'
 import React from 'react'
-import Bottom from '../Route/Bottom';
-import Personne from '../Data/Data'
+import Bottom from '../Route/Bottom'; 
 import { Ionicons } from '@expo/vector-icons';
 import HeaderBar from '../Components/HeaderBar';
 import { useNavigation } from '@react-navigation/native';
+import { useApp } from '../Provider/app.provider';
 
 const Accueil = () => {
-  const firstPerson = Personne[0];
+   
+  const {  User } = useApp();
   const { navigate } = useNavigation()
+
+  console.log('USEEEER', User);
   return (
     <> 
       <View style={styles.container}>
         <View style ={styles.rowContainer}>
         <Image
-                    source={{ uri: firstPerson.Photo }}
+                    source={{ uri: User.user_photo }}
                     style={styles.imgProfil}
                 />
-                <Text style={styles.nom}>Bonjour {firstPerson.Prenom}</Text>
-          <Ionicons style={{marginLeft: 150, marginTop: 26}} name="notifications" size={30} color="black" onPress={() => navigate('MesNotifs')}/>
+            
+                <Text style={styles.nom}>Bonjour {User.use_prenom}</Text>
+          <Ionicons style={{position:'absolute', right : 30, marginTop: 26}} name="notifications" size={30} color="black" onPress={() => navigate('MesNotifs')}/>
                 
         </View>
         <Text style={styles.Titre}>Réservez maintenant</Text>
