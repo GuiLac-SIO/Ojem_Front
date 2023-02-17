@@ -5,6 +5,7 @@ const AppContext = createContext();
 
 const AppProvider = ({ children }) => {
     const [User, setUser] = useState([]);
+    const[Enfant, setEnfant] = useState([])
     const [token, setToken] = useState([]);
 
 
@@ -12,8 +13,11 @@ const AppProvider = ({ children }) => {
 
     const providerValues = {
               // state
+              
+              Enfant,
               User,
               token,
+              setEnfant,
               setToken,
               setUser,
          // function 

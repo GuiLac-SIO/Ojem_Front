@@ -1,39 +1,89 @@
-import { StyleSheet, Text, View, Image, TouchableOpacity } from 'react-native'
+import { StyleSheet, Text, View, Image, TouchableOpacity, Keyboard } from 'react-native'
 import React from 'react'
- 
+
 import { useNavigation } from '@react-navigation/native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { AntDesign } from '@expo/vector-icons';
-import Bottom from '../Route/Bottom'; 
-import { MaterialIcons } from '@expo/vector-icons'; 
+import Bottom from '../Route/Bottom';
+import { MaterialIcons } from '@expo/vector-icons';
 import HeaderBar from '../Components/HeaderBar';
 import * as ImagePicker from 'expo-image-picker';
 import { useState } from 'react';
+import axios from "axios";
 import { useApp } from '../Provider/app.provider';
-
+import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome';
+import { Fumi } from 'react-native-textinput-effects';
 
 const Profil = () => {
-    const {  User } = useApp()
+    const { User, setUser } = useApp()
     const { navigate } = useNavigation()
-    const [image, setImage] = useState(User.Photo);
-     
+    const [image, setImage] = useState(User.use_photo);
+    const [prenom, onChangePrenom] = React.useState(''); 
+    const [nom, onChangeNom] = React.useState(''); 
+    const [sexe, onChangeSexe] = React.useState(''); 
+    const [mail, onChangeMail] = React.useState(''); 
+    const isButtonDisabledPrenom = prenom.trim().length === 0;
+    const isButtonDisabledNom = nom.trim().length === 0; 
+    const isButtonDisabledSexe = sexe.trim().length === 0;  
+    const isButtonDisabledMail = mail.trim().length === 0;  
+
+    const validateEmail = (email) => {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return emailRegex.test(email);
+    }
+    
+    const today = new Date();
+    const userDate = new Date(User.use_date_inscription);
+    const diff = today.getTime() - userDate.getTime();
+    const daysSinceRegistration = Math.floor(diff / 86400000); 
+
+
+    const Update = async (editColonne,text) => {
+        try {
+            console.log('text :',text, 'colone:', editColonne);
+            if (text) {
+                if(editColonne == 'use_mail' ) {
+                if(!validateEmail(text))
+                {
+
+                    alert("Veuillez saisir une adresse e-mail valide");
+                    return;
+                }}
+                else
+                console.log('USER ID :', editColonne);
+                setUser({ ...User, [editColonne]: text });
+                const response = await axios.post('http://192.168.1.71:3001/user/update', {
+                    colonne: editColonne,
+                    valeur: text,
+                    Userid: User.use_id
+                })
+                if (response.data) {
+                    Keyboard.dismiss();
+                }
+            }
+        }
+        catch (error) {
+            console.error("----", error);
+        }
+    }
 
     const pickImage = async () => {
         // No permissions request is necessary for launching the image library
         let result = await ImagePicker.launchImageLibraryAsync({
-          mediaTypes: ImagePicker.MediaTypeOptions.All,
-          allowsEditing: true,
-          aspect: [4, 3],
-          quality: 1,
+            mediaTypes: ImagePicker.MediaTypeOptions.All,
+            allowsEditing: true,
+            aspect: [4, 3],
+            quality: 1,
         });
-    
+
         console.log(result);
-    
+
         if (!result.canceled) {
-          setImage(result.assets[0].uri); 
+            setImage(result.assets[0].uri);
         }
-        
-      };
+
+    };
+
 
 
     return (
@@ -49,50 +99,85 @@ const Profil = () => {
                 />
                 <View style={styles.ridesFriends}>
 
-                {image && <Image source={{ uri: image }} style={styles.img} />}
+                    {image && <Image source={{ uri: image }} style={styles.img} />}
 
                     <MaterialIcons style={styles.camera} name="photo-camera" size={30} color="#00A0C6" onPress={pickImage}
                     />
                     <View style={styles.verticleLine}></View>
                     <View>
                         <Text style={styles.membre}>Membre depuis</Text>
-                        <Text style={styles.inscription}>{User.Inscription}</Text>
+                        <Text style={styles.inscription}>{daysSinceRegistration} Jours</Text>
                     </View>
                 </View>
 
                 <Text style={styles.prenomId}>{User.use_prenom}</Text>
-
-
                 <Text style={styles.nomId}>{User.use_nom}</Text>
 
+
+
+
                 <View style={styles.item}>
-                    <Text style={styles.nom}>Nom</Text>
-                    <AntDesign name="rightsquare" size={24} color="grey" style={{ marginTop: 33, marginLeft: 286, }} />
+                    <Fumi label={'Modifier nom :'} iconClass={FontAwesomeIcon} iconName={'user'} iconColor={'#f95a25'} 
+                        iconSize={20}   inputPadding={16}    onChangeText={onChangeNom} value={nom} 
+                    />  
+                    <AntDesign style={{ position: 'absolute', right: 20, top: 25 }} name="rightsquare" size={24} color={isButtonDisabledNom ? 'grey' : 'green'}
+                        onPress={() => {
+                            if (!isButtonDisabledNom) {
+                                Keyboard
+                                Update('use_nom',nom),
+                                onChangeNom('')
+                            }
+                        }} />
+                </View>
+
+
+                <View style={styles.item}>
+                    <Fumi label={'Modifier prenom :'} iconClass={FontAwesomeIcon} iconName={'user'} iconColor={'#f95a25'} 
+                        iconSize={20}   inputPadding={16}    onChangeText={onChangePrenom} value={prenom} 
+                    />  
+                    <AntDesign style={{ position: 'absolute', right: 20, top: 25 }} name="rightsquare" size={24} color={isButtonDisabledPrenom ? 'grey' : 'green'}
+                        onPress={() => {
+                            if (!isButtonDisabledPrenom) {
+                                Keyboard
+                                Update('use_prenom',prenom),
+                                onChangePrenom('')
+                            }
+                        }} />
                 </View>
 
                 <View style={styles.item}>
-                    <Text style={styles.text}>Prénom</Text>
-                    <AntDesign style={styles.icone} name="rightsquare" size={24} color="grey" />
+                    <Fumi label={'Modifier Sexe :'} iconClass={FontAwesomeIcon} iconName={'user'} iconColor={'#f95a25'} 
+                        iconSize={20}   inputPadding={16}    onChangeText={onChangeSexe} value={sexe} 
+                    />  
+                    <AntDesign style={{ position: 'absolute', right: 20, top: 25 }} name="rightsquare" size={24} color={isButtonDisabledSexe ? 'grey' : 'green'}
+                        onPress={() => {
+                            if (!isButtonDisabledSexe) {
+                                Keyboard
+                                Update('use_sexe',sexe),
+                                onChangeSexe('')
+                            }
+                        }} />
                 </View>
 
-                <View style={styles.item}>
-                    <Text style={styles.text}>Sexe</Text>
-                    <AntDesign style={styles.icone3} name="rightsquare" size={24} color="grey" />
-                </View>
+                
 
                 <View style={styles.item}>
-                    <Text style={styles.text}>Naissance</Text>
-                    <AntDesign style={styles.icone2} name="rightsquare" size={24} color="grey" />
-                </View>
-
-                <View style={styles.item}>
-                    <Text style={styles.text}>Mail</Text>
-                    <AntDesign style={styles.icone1} name="rightsquare" size={24} color="grey" />
+                    <Fumi label={'Modifier mail :'} iconClass={FontAwesomeIcon} iconName={'user'} iconColor={'#f95a25'} 
+                        iconSize={20}   inputPadding={16}    onChangeText={onChangeMail} value={mail} 
+                    />  
+                    <AntDesign style={{ position: 'absolute', right: 20, top: 25 }} name="rightsquare" size={24} color={isButtonDisabledMail ? 'grey' : 'green'}
+                        onPress={() => {
+                            if (!isButtonDisabledMail) {
+                                Keyboard
+                                Update('use_mail',mail),
+                                onChangeMail('')
+                            }
+                        }} />
                 </View>
 
                 <View style={styles.item}  >
                     <Text style={styles.text} onPress={() => navigate('Enfant')}>Enfants</Text>
-                    <AntDesign style={styles.icone} name="rightsquare" size={24} color="grey" onPress={() => navigate('Enfant')} />
+                    <AntDesign style={{ position: 'absolute', right: 20, top: 25 }} name="rightsquare" size={24} color="grey" onPress={() => navigate('Enfant')} />
                 </View>
 
                 <TouchableOpacity style={styles.Bouton} onPress={() => navigate('Home')}>
@@ -137,8 +222,9 @@ const styles = StyleSheet.create({
         marginLeft: 285,
     },
     item: {
-        flexDirection: 'row',
-        marginTop: 20,
+        marginLeft: 20,
+        marginTop:0,
+        
     },
 
     ridesFriends: {
@@ -228,7 +314,7 @@ const styles = StyleSheet.create({
     text: {
         color: '#2D5F74',
         fontSize: 15,
-
+        marginTop:10,
         marginLeft: 35,
         fontWeight: '500'
     },

@@ -17,7 +17,7 @@ const Accueil = () => {
       <View style={styles.container}>
         <View style ={styles.rowContainer}>
         <Image
-                    source={{ uri: User.user_photo }}
+                    source={{ uri: User.use_photo }}
                     style={styles.imgProfil}
                 />
             

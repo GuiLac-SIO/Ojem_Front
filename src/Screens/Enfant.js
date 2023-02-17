@@ -7,14 +7,15 @@ import { FontAwesome5 } from '@expo/vector-icons';
 import { Ionicons } from '@expo/vector-icons';
 import HeaderBar from '../Components/HeaderBar';
 import Personne from '../Data/Data';
+import { useApp } from '../Provider/app.provider';
 
 const Enfant = () => { 
     const { navigate } = useNavigation() 
-const firstPerson = Personne[0]
+    const { Enfant } = useApp();
     const RenderChildren = ({ children }) => (
         <View>
           {children.map((child, index) => (
-            <TextInput style={styles.input}    key={index} >  {child.Prenom} {child.Nom}</TextInput>
+            <TextInput style={styles.input}    key={index} >  {child.enf_nom} {child.enf_prenom}</TextInput>
           ))}
         </View>
       );
@@ -27,7 +28,7 @@ const firstPerson = Personne[0]
             <HeaderBar destination={'Accueil'}/>
             <View style={{marginTop: 40}}></View>
 
-            <RenderChildren children={firstPerson.Enfant} />
+            <RenderChildren children={Enfant} />
 
          
              

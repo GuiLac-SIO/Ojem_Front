@@ -4,6 +4,7 @@ import { useNavigation } from '@react-navigation/native';
 import axios from "axios";
 import * as Crypto from 'expo-crypto';
 import * as Yup from 'yup';
+import { Ionicons } from '@expo/vector-icons';
 
 const Inscription = () => {
     const [Prenom, onChangePrenom] = React.useState('');
@@ -12,6 +13,7 @@ const Inscription = () => {
     const [Mdp, onChangeMdp] = React.useState('');
     const [MdpConf, onChangeMdpConf] = React.useState('');
     const { navigate } = useNavigation()
+    const navigation = useNavigation();
     const getCurrentDate = () => {
 
         var date = new Date().getDate();
@@ -105,6 +107,7 @@ const Inscription = () => {
 
     return (
         <View style={styles.Fond}>
+              <Ionicons name="arrow-back-circle" size={40} color="#00A0C6"  style={{ marginLeft : 30, marginTop: 37,}} onPress={() => navigation.goBack()}/>
             <Text style={styles.Titre}>INSCRIPTION</Text>
             <Image
                 source={require('../Ressources/waveJaune.png')}
@@ -182,7 +185,7 @@ const styles = StyleSheet.create({
         color: '#00A0C6',
         fontSize: 30,
         textAlign: 'center',
-        marginTop: 98,
+        marginTop: 21,
         marginLeft: 'auto',
         marginRight: 'auto',
         fontWeight: '900'

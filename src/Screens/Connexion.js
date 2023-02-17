@@ -5,12 +5,13 @@ import { useNavigation } from '@react-navigation/native';
 import axios from "axios";
 import { useApp, } from '../Provider/app.provider.js'; 
 import * as Crypto from 'expo-crypto';
+import { Ionicons } from '@expo/vector-icons';
 
 const Connexion = () => {
-    const {  setToken,setUser } = useApp();
-    
-    const [Login, onChangeLogin] = React.useState('');
-    const [Mdp, onChangeMdp] = React.useState(''); 
+    const {  setToken,setUser,setEnfant } = useApp();
+    const navigation = useNavigation();
+    const [Login, onChangeLogin] = React.useState('G@g.fr');
+    const [Mdp, onChangeMdp] = React.useState('Guiguigui'); 
     const { navigate } = useNavigation()
   
 
@@ -33,11 +34,18 @@ const handleLogin = async () => {
         const config = {
           headers: { Authorization: `Bearer ${response.data.token}` }
         }; 
-        const User = await axios.get( 
+        const user = await axios.get( 
           'http://192.168.1.71:3001/user/getUser', 
           config
         );
-        setUser(User.data[0]);
+      
+        const Enfant = await axios.get( 
+            'http://192.168.1.71:3001/user/getEnfant',
+            config
+            );
+            
+        setEnfant(Enfant.data )
+        setUser(user.data[0] );
         navigate('Accueil');
       }
       else{
@@ -52,6 +60,7 @@ const handleLogin = async () => {
    
     return (
         <View style={styles.Fond}>
+             <Ionicons name="arrow-back-circle" size={40} color="#00A0C6"  style={{ marginLeft : 30, marginTop: 37,}} onPress={() => navigation.goBack()}/>
             <Text style={styles.Titre}>CONNEXION</Text>
             <Image
                 source={require('../Ressources/waveJaune.png')}
@@ -109,7 +118,7 @@ const styles = StyleSheet.create({
         color: '#00A0C6',
         fontSize: 30,
         textAlign: 'center',
-        marginTop: 98,
+        marginTop: 21,
         marginLeft: 'auto',
         marginRight: 'auto',
         fontWeight: '900'

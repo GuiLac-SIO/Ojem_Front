@@ -24,7 +24,7 @@ import Validation from '../Screens/Validation';
 import Enfant from '../Screens/Enfant';
 import { Entypo } from '@expo/vector-icons';
 import React from 'react';
-import Calendrier from '../Screens/Calendrier';
+import Calendrier from '../Screens/Calendrier'; 
 import MesNotifs from '../Screens/MesNotifs';
 const Tab = createBottomTabNavigator();
 
@@ -37,7 +37,7 @@ const MyStack = () => {
        
       <Stack.Navigator> 
         <Stack.Screen options={{ headerShown: false }} name="Home" component={Home} />
-        <Stack.Screen options={{ headerShown: false }} name="Connexion" component={Connexion} />
+        <Stack.Screen options={{ headerShown: false }} name="Connexion" component={Connexion} /> 
         <Stack.Screen options={{ headerShown: false }} name="Validation" component={Validation} />
         <Stack.Screen options={{ headerShown: false }} name="Inscription" component={Inscription} />
         <Stack.Screen options={{ headerShown: false }} name="Periode" component={Periode} />

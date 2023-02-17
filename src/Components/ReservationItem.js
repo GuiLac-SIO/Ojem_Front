@@ -3,8 +3,10 @@ import React from 'react'
 import Stage from '../Data/Stage';
 import { useNavigation } from '@react-navigation/native'; 
 import { Entypo } from '@expo/vector-icons';
+import { useApp } from '../Provider/app.provider';
 
 const ReservationItem = () => {
+    const { User} = useApp()
     const firstStage = Stage[0]
     const { navigate } = useNavigation()
     const navigation = useNavigation();
@@ -13,7 +15,7 @@ const ReservationItem = () => {
       <View style={styles.ridesFriends}>
         <Image source={{ uri: firstStage.Image }} style={styles.img}  />
                 <View>
-                <Text style={styles.nom}>{[firstStage.Nom, firstStage.Prenom]}</Text>
+                <Text style={styles.nom}>{[User.use_nom, User.use_prenom]}</Text>
                 <Text style={styles.activite}>Activité : {firstStage.Activite}</Text>
                 <View style={{flexDirection: 'row',}}>
                 <Entypo name="location-pin" size={16} color="#2D5F74" />
